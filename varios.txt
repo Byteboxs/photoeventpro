@@ -1,0 +1,116 @@
+zip -r latest_bkp_16.07.2025.zip .
+
+
+<?php
+
+namespace app\models;
+
+use app\core\model\Model;
+use app\core\model\Rules;
+use app\core\security\PasswordHashUtility;
+
+/**
+ * Class User
+ * 
+ * This class represents the 'users' table in the database.
+ * 
+ */
+class User extends Model
+{
+    protected $fillable = ['roles_id', 'email', 'password_hash', 'status'];
+    static $ACTIVO = 'activo';
+    static $INACTIVO = 'inactivo';
+
+    private $role;
+    private $person;
+    private $customer;
+    private $employe;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->rules->clear();
+        // TODO: Crear reglas de negocio aca.
+        $this->rules->add(
+            'email',
+            (new Rules())
+                ->unique($this->table, 'email')
+                ->get()
+        );
+    }
+
+    public function getEmploye()
+    {
+        if (!$this->id) return null;
+        $this->builder->select('u.id AS user_id')
+            ->select('r.name as role')
+            ->select('u.email')
+            ->select("CONCAT(p.primer_nombre, 
+           IFNULL(CONCAT(' ', p.segundo_nombre), ''), 
+           ' ', 
+           p.primer_apellido, 
+           IFNULL(CONCAT(' ', p.segundo_apellido), '')) AS nombre_completo")
+            ->select('p.direccion')
+            ->select('p.telefono')
+            ->select('e.cargo')
+            ->from('employes e')
+            ->join('persons p', 'e.persons_id', '=', 'p.id')
+            ->join('users u', 'p.users_id', '=', 'u.id')
+            ->join('roles r', 'u.roles_id', '=', 'r.id')
+            ->where('u.id', '=', $this->id);
+        $stmt = $this->builder->get();
+        try {
+            $this->deactivateFetchObject();
+            $result = $this->fetchResult($stmt);
+            $this->activateFetchObject();
+            return $result;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    public function getCustommer()
+    {
+        if (!$this->id) return null;
+        $this->builder->select('u.id AS user_id')
+            ->select('r.name as role')
+            ->select('u.email')
+            ->select("CONCAT(p.primer_nombre, 
+           IFNULL(CONCAT(' ', p.segundo_nombre), ''), 
+           ' ', 
+           p.primer_apellido, 
+           IFNULL(CONCAT(' ', p.segundo_apellido), '')) AS nombre_completo")
+            ->select('p.direccion')
+            ->select('p.telefono')
+            ->from('customers c')
+            ->join('persons p', 'c.persons_id', '=', 'p.id')
+            ->join('users u', 'p.users_id', '=', 'u.id')
+            ->join('roles r', 'u.roles_id', '=', 'r.id')
+            ->where('u.id', '=', $this->id);
+        $stmt = $this->builder->get();
+        try {
+            $this->deactivateFetchObject();
+            $result = $this->fetchResult($stmt);
+            $this->activateFetchObject();
+            return $result;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    public function role()
+    {
+        if (!$this->id) return null;
+        $model = new Role();
+        return $model->find($this->roles_id);
+    }
+
+    public function isCustomer()
+    {
+        if (!$this->id) return null;
+        if ($this->role()->name === 'Administrador') {
+            return false;
+        }
+        return true;
+    }
+}

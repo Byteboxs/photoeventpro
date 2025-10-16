@@ -1,0 +1,43 @@
+.select-con-buscador {
+  position: relative;
+}
+
+.search-overlay {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  /* background-color: white; */
+  background-color: #2b2c40 !important;
+  color: #d5d5e2;
+  border: 1px solid #5f607b;
+  border-top: none;
+  z-index: 1000;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.search-overlay.show {
+  display: block;
+}
+
+.search-overlay .dropdown-item {
+  cursor: pointer;
+  padding: 0.375rem 0.75rem;
+}
+
+.select-con-buscador select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 2.5rem;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 16px 12px;
+}
+
+.search-input {
+  color: #d5d5e2;
+}

@@ -1,0 +1,133 @@
+body {
+  font-family: "Karla", sans-serif;
+  background-color: #232333 !important;
+  /* min-height: 100vh; */
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-wrapper {
+  margin-bottom: 19px;
+}
+.brand-wrapper .logo {
+  height: 37px;
+}
+.login-card {
+  border: 0;
+  border-radius: 27.5px;
+  box-shadow: 0 10px 30px 0 rgba(172, 168, 168, 0.43);
+  /* overflow: hidden;
+  max-height: 100vh; */
+  width: 100%; /* Ajuste de ancho para evitar que sea demasiado grande */
+  max-width: 1200px; /* Ancho máximo opcional */
+  max-height: 200vh;
+  display: flex;
+  overflow: hidden;
+  margin-bottom: 5vh;
+}
+
+/* Adaptación para dispositivos pequeños en orientación horizontal */
+@media (max-width: 767px) and (orientation: landscape) {
+  .login-card {
+    max-height: none; /* Permitir scroll si es necesario */
+    overflow-y: auto; /* Habilitar scroll vertical */
+  }
+}
+
+/* Asegurar que la tarjeta se adapte sin scroll en dispositivos normales */
+@media (min-width: 768px) {
+  .login-card {
+    height: auto;
+    max-height: 105vh; /* Dejar un poco de margen */
+  }
+}
+
+.login-card-img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+.login-card .card-body {
+  /* padding: 85px 60px 10px 10px; */
+  padding: clamp(35px, 10vw, 85px) clamp(20px, 5vw, 60px) clamp(20px, 3vw, 10px)
+    clamp(20px, 2vw, 10px);
+}
+
+/* @media (max-width: 422px) {
+  .login-card .card-body {
+    padding: 35px 24px 20px 20px;
+  }
+} */
+
+.login-card-description {
+  font-size: 25px;
+  color: #000;
+  font-weight: normal;
+  margin-bottom: 23px;
+}
+.login-card form {
+  max-width: 326px;
+}
+.login-card .form-control {
+  border: 1px solid #d5dae2;
+  padding: 15px 25px;
+  margin-bottom: 20px;
+  max-height: 45px;
+  font-size: 13px;
+  line-height: 15;
+  font-weight: normal;
+}
+.login-card .form-control::-webkit-input-placeholder {
+  color: #919aa3;
+}
+.login-card .form-control::-moz-placeholder {
+  color: #919aa3;
+}
+.login-card .form-control:-ms-input-placeholder {
+  color: #919aa3;
+}
+.login-card .form-control::-ms-input-placeholder {
+  color: #919aa3;
+}
+.login-card .form-control::placeholder {
+  color: #919aa3;
+}
+.login-card .login-btn {
+  padding: 13px 20px 12px;
+  background-color: #000;
+  border-radius: 4px;
+  font-size: 17px;
+  font-weight: bold;
+  line-height: 20px;
+  color: #fff;
+  margin-bottom: 24px;
+}
+.login-card .login-btn:hover {
+  border: 1px solid #000;
+  background-color: transparent;
+  color: #000;
+}
+.login-card .forgot-password-link {
+  font-size: 14px;
+  color: #919aa3;
+  margin-bottom: 20px !important;
+  margin-top: 20px !important;
+}
+.login-card-footer-text {
+  font-size: 16px;
+  color: #0d2366;
+  /* margin-bottom: 60px; */
+}
+@media (max-width: 767px) {
+  .login-card-footer-text {
+    margin-bottom: 24px;
+  }
+}
+.login-card-footer-nav a {
+  font-size: 14px;
+  color: #919aa3;
+}
+
+/*# sourceMappingURL=login.css.map */

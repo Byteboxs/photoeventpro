@@ -1,0 +1,39 @@
+<?php
+require_once 'vendor/autoload.php';
+
+use app\core\Application;
+use app\core\config\PhpFileConfigLoader;
+use app\core\config\Config;
+
+$configLoader = new PhpFileConfigLoader('cfg.php');
+$config = Config::create($configLoader);
+$app = new Application(__DIR__, $config);
+$logger = Application::$app->logger;
+
+$builder = Application::$app->builder;
+$schema = Application::$app->schema;
+
+if ($argc == 1) {
+    $app->schema->applyMigrations();
+    exit(1); // Termina el script con un código de salida no exitoso
+} else if ($argc > 1 && $argc < 3) {
+    echo "Uso: php migrations.php <migration> <down>\n";
+    exit(1); // Termina el script con un código de salida no exitoso
+}
+
+// Los argumentos reales comienzan desde $argv[1]
+$migration = $argv[1];
+$down = $argv[2];
+
+if ($schema->hasMigration($migration)) {
+    if ($down == 'down') {
+        $schema->downMigration($migration);
+        exit(1); // Termina el script con un código de salida no exitoso
+    } else {
+        echo "Uso: php migrations.php <migration> <down>\n";
+        exit(1); // Termina el script con un código de salida no exitoso
+    }
+} else {
+    echo "La migración $migration no existe\n";
+    exit(1); // Termina el script con un código de salida no exitoso
+}

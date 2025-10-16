@@ -1,0 +1,224 @@
+<style>
+    .image-panel {
+        background-color: #ffffff;
+        border-right: 1px solid #e0e4e8;
+        height: 100vh;
+        overflow-y: auto;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .album-editor {
+        background-color: #f9fafc;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        overflow: auto;
+    }
+
+    .album-container {
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        gap: 15px;
+        overflow-x: auto;
+        padding: 10px;
+        width: 100%;
+    }
+
+    .album-sheet {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        width: auto;
+        padding: 10px;
+        background-color: #ffffff;
+        border: 2px solid #e0e4e8;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .album-page {
+        width: 200px;
+        height: 300px;
+        border: 1px dashed #c0c7cf;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .album-page-label {
+        position: absolute;
+        bottom: 5px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #f1f3f5;
+        padding: 3px 3px;
+        border-radius: 0 0 5px 5px;
+        font-size: 0.8em;
+        color: #495057;
+        z-index: 10;
+    }
+
+    .album-page.drag-over {
+        border-color: #007bff;
+        background-color: rgba(0, 123, 255, 0.1);
+    }
+
+    .album-page img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    .preloaded-image {
+        cursor: grab;
+        transition: transform 0.2s;
+        margin: 5px;
+        width: 100%;
+        border: 1px solid #e0e4e8;
+    }
+
+    .preloaded-image:hover {
+        transform: scale(1.05);
+    }
+
+    .preloaded-image.dragging {
+        opacity: 0.5;
+    }
+
+    .scroll-controls {
+        display: flex;
+        align-items: center;
+        position: relative;
+    }
+
+    .scroll-button {
+        background-color: #007bff;
+        color: #ffffff;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        font-size: 1.2em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        z-index: 1;
+    }
+
+    .scroll-button:hover {
+        background-color: #0056b3;
+    }
+
+    #scrollLeft {
+        position: absolute;
+        left: -20px;
+    }
+
+    #scrollRight {
+        position: absolute;
+        right: -20px;
+    }
+</style>
+<div id="orderDetailId" data-order-detail="<?= $orderDetailId ?>"></div>
+<div id="maxPages" data-max="<?= $maxPages ?>"></div>
+<nav class="navbar navbar-expand-xl align-items-center bg-navbar-theme">
+    <div class=" container-fluid">
+        <div class="navbar-brand">
+            <i class="fas fa-camera-retro"></i>
+        </div>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-ex-5">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbar-ex-5">
+            <ul class="navbar-nav ms-lg-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="javascript:void(0);" id="saveAlbumBtn">
+                        <i class="far fa-save"></i> Guardar
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="" id="resetAlbumBtn">
+                        <i class='bx bx-undo'></i> Reiniciar
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="row my-5">
+    <div class="col-md-2 col-sm-12">
+        <div class="card h-100 mx-auto">
+            <div class="card-body" style="max-height: 48vh; overflow: auto;">
+                <?= $images ?>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-10 col-sm-12">
+        <div class="card h-100">
+            <div class="card-body px-5">
+                <div class="scroll-controls">
+                    <button id="scrollLeft" class="scroll-button">
+                        <i class="fas fa-angle-left"></i>
+                    </button>
+                    <div id="albumContainer" class="album-container">
+                        <!-- Las hojas del álbum se generarán dinámicamente -->
+                    </div>
+                    <button id="scrollRight" class="scroll-button">
+                        <i class="fas fa-angle-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    const orderDetailId = document.getElementById('orderDetailId').dataset.orderDetail;
+    const maxPages = document.getElementById('maxPages').dataset.max;
+    const images = document.querySelectorAll('img');
+
+    function handleDragStart(event) {
+        event.dataTransfer.setData('text/plain', event.target.id);
+        event.target.classList.add('dragging');
+    }
+
+    images.forEach(img => {
+        img.addEventListener('dragstart', handleDragStart);
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+
+
+        const albumManager = new AlbumManager(maxPages);
+    });
+    document.getElementById('scrollLeft').addEventListener('click', () => {
+        const container = document.getElementById('albumContainer');
+        container.scrollBy({
+            left: -200,
+            behavior: 'smooth'
+        });
+    });
+    document.getElementById('scrollRight').addEventListener('click', () => {
+        const container = document.getElementById('albumContainer');
+        container.scrollBy({
+            left: 200,
+            behavior: 'smooth'
+        });
+    });
+</script>

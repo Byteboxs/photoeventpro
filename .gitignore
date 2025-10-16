@@ -1,0 +1,10 @@
+# Excluir la carpeta 'log' y su contenido (dentro de www)
+/www/log/
+
+# Excluir la carpeta 'uploads' y su contenido (dentro de www)
+/www/uploads/
+
+# Excluir el archivo de configuración sensible 'cfg.php' (dentro de www)
+/www/cfg.php
+
+# NO AÑADIR cfg.example.php AQUÍ

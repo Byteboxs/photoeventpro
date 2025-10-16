@@ -1,0 +1,26 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /photoeventpro/public/
+
+    # Redirige a /public/ si la URL está vacía o solo contiene una barra
+    RewriteRule ^$ /photoeventpro/public/ [L]
+
+    # Si el archivo o directorio solicitado no existe, redirige a /public/web.php si la URL comienza con /web/
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^web/(.*)$ /photoeventpro/public/web.php?url=$1 [QSA,L]
+
+    # Si el archivo o directorio solicitado no existe, redirige a /public/api.php si la URL comienza con /api/
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^api/(.*)$ /photoeventpro/public/api.php?url=$1 [QSA,L]
+
+    # Si el archivo o directorio solicitado no existe, redirige a /public/index.php con la URL como parámetro
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ /photoeventpro/public/index.php?url=$1 [QSA,L]
+
+    # Bloquear el acceso a cualquier otra carpeta que no sea 'public'
+    RewriteCond %{REQUEST_URI} !^/photoeventpro/public/
+    RewriteRule ^ - [F,L]
+</IfModule>

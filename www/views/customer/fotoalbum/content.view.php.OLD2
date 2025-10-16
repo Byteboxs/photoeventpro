@@ -1,0 +1,916 @@
+    <style>
+        :root {
+            --primary-color: #3a86ff;
+            --secondary-color: #8338ec;
+            --accent-color: #ff006e;
+            --light-bg: #f8f9fa;
+            --dark-text: #212529;
+            --border-color: #dee2e6;
+            --hover-bg: #e9ecef;
+        }
+
+        /* body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        } */
+
+        .app-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-title {
+            font-weight: 700;
+            margin-bottom: 0;
+        }
+
+        .header-icon {
+            margin-right: 10px;
+            font-size: 1.5rem;
+        }
+
+        .btn-custom {
+            background-color: var(--primary-color);
+            border: none;
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-custom:hover {
+            background-color: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-custom-secondary {
+            background-color: white;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        .btn-custom-secondary:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .image-library {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            height: 70vh;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .library-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark-text);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .preloaded-image {
+            cursor: grab;
+            transition: all 0.2s ease;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+            width: 100%;
+        }
+
+        .preloaded-image:hover {
+            transform: scale(1.03);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .preloaded-image.dragging {
+            opacity: 0.6;
+            transform: scale(1.05);
+        }
+
+        .album-workspace {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            height: 70vh;
+            padding: 1.5rem;
+        }
+
+        .album-container {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 20px;
+            overflow-x: auto;
+            padding: 15px 5px;
+            width: 100%;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-color) var(--light-bg);
+            -ms-overflow-style: none;
+            scroll-behavior: smooth;
+        }
+
+        .album-container::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .album-container::-webkit-scrollbar-track {
+            background: var(--light-bg);
+            border-radius: 10px;
+        }
+
+        .album-container::-webkit-scrollbar-thumb {
+            background-color: var(--primary-color);
+            border-radius: 10px;
+        }
+
+        .album-sheet {
+            display: flex;
+            gap: 10px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            padding: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .album-sheet:hover {
+            transform: translateY(-5px);
+        }
+
+        .album-page {
+            width: 180px;
+            height: 270px;
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background-color: rgba(248, 249, 250, 0.5);
+        }
+
+        .album-page:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(58, 134, 255, 0.05);
+        }
+
+        .album-page.drag-over {
+            border-color: var(--primary-color);
+            background-color: rgba(58, 134, 255, 0.1);
+            transform: scale(1.02);
+            box-shadow: 0 0 15px rgba(58, 134, 255, 0.2);
+        }
+
+        .album-page-label {
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--dark-text);
+            font-weight: 500;
+            z-index: 10;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .album-page img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-radius: 6px;
+        }
+
+        .scroll-controls {
+            display: flex;
+            align-items: center;
+            position: relative;
+            width: 100%;
+        }
+
+        .scroll-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            z-index: 2;
+            transition: all 0.2s ease;
+        }
+
+        .scroll-button:hover {
+            background-color: #2563eb;
+            transform: scale(1.1);
+        }
+
+        #scrollLeft {
+            position: absolute;
+            left: -15px;
+        }
+
+        #scrollRight {
+            position: absolute;
+            right: -15px;
+        }
+
+        .tooltip-info {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-size: 0.8rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .page-actions {
+            position: absolute;
+            top: 0;
+            right: 0;
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            margin: 5px;
+            z-index: 15;
+        }
+
+        .album-page:hover .page-actions {
+            display: flex;
+        }
+
+        .page-action-btn {
+            background-color: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dark-text);
+            font-size: 0.8rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .page-action-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .workspace-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .workspace-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark-text);
+        }
+
+        .album-progress {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 1rem;
+        }
+
+        .progress-bar-container {
+            flex-grow: 1;
+            height: 8px;
+            background-color: var(--light-bg);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .empty-page-message {
+            color: #6c757d;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .control-btn {
+            border: none;
+            background: transparent;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .control-btn:hover {
+            color: #2563eb;
+            transform: scale(1.1);
+        }
+
+        .helper-tip {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            max-width: 300px;
+            z-index: 1000;
+            font-size: 0.9rem;
+            color: var(--dark-text);
+            border-left: 4px solid var(--primary-color);
+            display: none;
+        }
+
+        .helper-tip.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+
+            .album-workspace,
+            .image-library {
+                height: auto;
+                min-height: 400px;
+            }
+
+            .album-sheet {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .image-library {
+                margin-bottom: 20px;
+            }
+
+            .album-page {
+                width: 150px;
+                height: 225px;
+            }
+        }
+    </style>
+    <header class="app-header mb-4">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-camera-retro header-icon"></i>
+                    <h1 class="header-title">Editor de Álbum</h1>
+                </div>
+                <div>
+                    <button id="saveAlbumBtn" class="btn btn-custom me-2">
+                        <i class="far fa-save me-2"></i>Guardar álbum
+                    </button>
+                    <button id="resetAlbumBtn" class="btn btn-custom-secondary">
+                        <i class="fas fa-undo me-2"></i>Reiniciar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="row">
+            <!-- Panel de imágenes (Biblioteca) -->
+            <div class="col-lg-3 col-md-4 mb-4 mb-md-0">
+                <div class="image-library">
+                    <h2 class="library-title">
+                        <i class="fas fa-images me-2"></i>Mis imágenes
+                    </h2>
+                    <p class="text-muted small mb-3">Arrastra las imágenes hacia las páginas del álbum</p>
+
+                    <div id="imageGallery" class="row g-2">
+                        <!-- Imágenes precargadas (ejemplo) -->
+                        <?= $images ?>
+                        <div class="col-6">
+                            <img src="https://placehold.co/400x640" alt="Imagen 1" class="preloaded-image img-fluid" draggable="true" data-img-id="1">
+                        </div>
+                        <div class="col-6">
+                            <img src="https://placehold.co/400x640" alt="Imagen 2" class="preloaded-image img-fluid" draggable="true" data-img-id="2">
+                        </div>
+                        <div class="col-6">
+                            <img src="https://placehold.co/400x640" alt="Imagen 3" class="preloaded-image img-fluid" draggable="true" data-img-id="3">
+                        </div>
+                        <div class="col-6">
+                            <img src="https://placehold.co/400x640" alt="Imagen 4" class="preloaded-image img-fluid" draggable="true" data-img-id="4">
+                        </div>
+                        <div class="col-6">
+                            <img src="https://placehold.co/400x640" alt="Imagen 5" class="preloaded-image img-fluid" draggable="true" data-img-id="5">
+                        </div>
+                        <div class="col-6">
+                            <img src="https://placehold.co/400x640" alt="Imagen 6" class="preloaded-image img-fluid" draggable="true" data-img-id="6">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Área de trabajo del álbum -->
+            <div class="col-lg-9 col-md-8">
+                <div class="album-workspace">
+                    <div class="workspace-header">
+                        <div class="workspace-title">
+                            <i class="fas fa-book-open me-2"></i>Páginas del álbum
+                        </div>
+                        <div class="workspace-controls">
+                            <button class="control-btn" id="addPageBtn" title="Añadir página">
+                                <i class="fas fa-plus-circle"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Visualización de páginas con controles de desplazamiento -->
+                    <div class="scroll-controls">
+                        <button id="scrollLeft" class="scroll-button">
+                            <i class="fas fa-angle-left"></i>
+                        </button>
+
+                        <div id="albumContainer" class="album-container">
+                            <!-- Las hojas del álbum se generarán dinámicamente -->
+                            <div class="album-sheet">
+                                <div class="album-page" data-page="1">
+                                    <div class="empty-page-message">
+                                        <i class="fas fa-plus-circle mb-2" style="font-size: 1.5rem;"></i>
+                                        <div>Arrastra una imagen aquí</div>
+                                    </div>
+                                    <div class="album-page-label">Página 1</div>
+                                    <div class="page-actions">
+                                        <button class="page-action-btn remove-image" title="Eliminar imagen">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="album-page" data-page="2">
+                                    <div class="empty-page-message">
+                                        <i class="fas fa-plus-circle mb-2" style="font-size: 1.5rem;"></i>
+                                        <div>Arrastra una imagen aquí</div>
+                                    </div>
+                                    <div class="album-page-label">Página 2</div>
+                                    <div class="page-actions">
+                                        <button class="page-action-btn remove-image" title="Eliminar imagen">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="album-sheet">
+                                <div class="album-page" data-page="3">
+                                    <div class="empty-page-message">
+                                        <i class="fas fa-plus-circle mb-2" style="font-size: 1.5rem;"></i>
+                                        <div>Arrastra una imagen aquí</div>
+                                    </div>
+                                    <div class="album-page-label">Página 3</div>
+                                    <div class="page-actions">
+                                        <button class="page-action-btn remove-image" title="Eliminar imagen">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="album-page" data-page="4">
+                                    <div class="empty-page-message">
+                                        <i class="fas fa-plus-circle mb-2" style="font-size: 1.5rem;"></i>
+                                        <div>Arrastra una imagen aquí</div>
+                                    </div>
+                                    <div class="album-page-label">Página 4</div>
+                                    <div class="page-actions">
+                                        <button class="page-action-btn remove-image" title="Eliminar imagen">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button id="scrollRight" class="scroll-button">
+                            <i class="fas fa-angle-right"></i>
+                        </button>
+                    </div>
+
+                    <!-- Barra de progreso -->
+                    <div class="album-progress mt-4">
+                        <span>Progreso:</span>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" style="width: 0%"></div>
+                        </div>
+                        <span id="progressText">0/10</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Ayuda contextual -->
+    <div class="helper-tip show" id="helperTip">
+        <h6 class="mb-2"><i class="fas fa-lightbulb me-2"></i>Consejo</h6>
+        <p class="mb-0">Arrastra y suelta las imágenes desde la biblioteca hacia las páginas del álbum para comenzar a diseñar.</p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Variables globales
+            const albumContainer = document.getElementById('albumContainer');
+            const scrollLeftBtn = document.getElementById('scrollLeft');
+            const scrollRightBtn = document.getElementById('scrollRight');
+            const saveAlbumBtn = document.getElementById('saveAlbumBtn');
+            const resetAlbumBtn = document.getElementById('resetAlbumBtn');
+            const addPageBtn = document.getElementById('addPageBtn');
+            const helperTip = document.getElementById('helperTip');
+            const progressBar = document.querySelector('.progress-bar-fill');
+            const progressText = document.getElementById('progressText');
+
+            // Total de páginas máximo (se puede obtener del backend)
+            const maxPages = 8;
+            let currentPages = 8; // Comenzamos con 4 páginas en el ejemplo
+
+            // Función para inicializar el álbum con el número de páginas actual
+            function initializeAlbum() {
+                albumContainer.innerHTML = ''; // Limpiar cualquier contenido inicial
+
+                // Calcular el número de hojas necesarias
+                const initialSheets = Math.ceil(currentPages / 2);
+
+                for (let i = 1; i <= initialSheets; i++) {
+                    const newSheet = document.createElement('div');
+                    newSheet.className = 'album-sheet';
+
+                    const firstPageNumber = (i - 1) * 2 + 1;
+                    const secondPageNumber = firstPageNumber + 1;
+
+                    // Crear la primera página de la hoja
+                    if (firstPageNumber <= currentPages) {
+                        const newPage1 = createPageElement(firstPageNumber);
+                        newSheet.appendChild(newPage1);
+                    }
+
+                    // Crear la segunda página de la hoja si es necesario
+                    if (secondPageNumber <= currentPages) {
+                        const newPage2 = createPageElement(secondPageNumber);
+                        newSheet.appendChild(newPage2);
+                    }
+
+                    albumContainer.appendChild(newSheet);
+                }
+            }
+
+            // Inicializar el álbum con el número de páginas definido en currentPages
+            initializeAlbum();
+
+            // Configuración de arrastrar y soltar
+            setupDragAndDrop();
+
+            // Configuración de los botones de desplazamiento
+            scrollLeftBtn.addEventListener('click', () => {
+                albumContainer.scrollBy({
+                    left: -300,
+                    behavior: 'smooth'
+                });
+            });
+
+            scrollRightBtn.addEventListener('click', () => {
+                albumContainer.scrollBy({
+                    left: 300,
+                    behavior: 'smooth'
+                });
+            });
+
+            // Guardar álbum
+            saveAlbumBtn.addEventListener('click', function() {
+                // Mostrar mensaje de confirmación
+                if (confirm('¿Estás seguro de que deseas guardar el álbum?')) {
+                    // Aquí iría la lógica para guardar el álbum
+                    showNotification('Álbum guardado correctamente');
+                }
+            });
+
+            // Reiniciar álbum
+            resetAlbumBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (confirm('¿Estás seguro de que deseas reiniciar el álbum? Se perderán todos los cambios.')) {
+                    // Aquí iría la lógica para reiniciar el álbum
+                    resetAlbum();
+                }
+            });
+
+            // Añadir nueva página
+            addPageBtn.addEventListener('click', function() {
+                if (currentPages < maxPages) {
+                    addNewPage();
+                } else {
+                    showNotification('Has alcanzado el número máximo de páginas', 'error');
+                }
+            });
+
+            // Ocultar tip de ayuda después de 6 segundos
+            setTimeout(() => {
+                helperTip.classList.remove('show');
+            }, 6000);
+
+            // Configurar los botones de eliminar imagen
+            setupRemoveButtons();
+
+            // Actualizar la barra de progreso
+            updateProgress();
+
+            // Funciones de utilidad
+            function setupDragAndDrop() {
+                const preloadedImages = document.querySelectorAll('.preloaded-image');
+                const albumPages = document.querySelectorAll('.album-page');
+
+                preloadedImages.forEach(img => {
+                    img.addEventListener('dragstart', function(e) {
+                        e.dataTransfer.setData('text/plain', this.dataset.imgId);
+                        this.classList.add('dragging');
+                    });
+
+                    img.addEventListener('dragend', function() {
+                        this.classList.remove('dragging');
+                    });
+                });
+
+                albumPages.forEach(page => {
+                    page.addEventListener('dragover', function(e) {
+                        e.preventDefault();
+                        this.classList.add('drag-over');
+                    });
+
+                    page.addEventListener('dragleave', function() {
+                        this.classList.remove('drag-over');
+                    });
+
+                    page.addEventListener('drop', function(e) {
+                        e.preventDefault();
+                        this.classList.remove('drag-over');
+                        const imgId = e.dataTransfer.getData('text/plain');
+
+                        // Encontrar la imagen pre-cargada correspondiente
+                        const draggedImage = document.querySelector(`.preloaded-image[data-img-id="${imgId}"]`);
+
+                        // Verificar si se encontró la imagen pre-cargada
+                        if (draggedImage) {
+                            // Obtener la URL de la imagen pre-cargada
+                            const imageUrl = draggedImage.src;
+
+                            // Eliminar el mensaje vacío si existe
+                            const emptyMessage = this.querySelector('.empty-page-message');
+                            if (emptyMessage) {
+                                emptyMessage.style.display = 'none';
+                            }
+
+                            // Crear una imagen nueva para la página
+                            const newImage = document.createElement('img');
+                            newImage.src = imageUrl; // <---- USAR LA URL DE LA IMAGEN ARRASTRADA
+                            newImage.alt = `Imagen ${imgId}`;
+                            newImage.dataset.imgId = imgId;
+
+                            // Eliminar imagen anterior si existe
+                            const existingImg = this.querySelector('img');
+                            if (existingImg) {
+                                existingImg.remove();
+                            }
+
+                            this.appendChild(newImage);
+
+                            // Mostrar los botones de acción
+                            const actions = this.querySelector('.page-actions');
+                            if (actions) {
+                                actions.style.display = 'flex';
+                            }
+
+                            // Actualizar progreso
+                            updateProgress();
+
+                            // Mostrar confirmación
+                            showNotification('Imagen colocada correctamente');
+                        } else {
+                            console.error(`No se encontró la imagen pre-cargada con ID: ${imgId}`);
+                            showNotification('Error al colocar la imagen', 'error');
+                        }
+                    });
+                });
+            }
+
+            function setupRemoveButtons() {
+                document.querySelectorAll('.remove-image').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const page = this.closest('.album-page');
+                        const image = page.querySelector('img');
+
+                        if (image) {
+                            image.remove();
+
+                            // Mostrar mensaje vacío nuevamente
+                            const emptyMessage = page.querySelector('.empty-page-message');
+                            if (emptyMessage) {
+                                emptyMessage.style.display = 'block';
+                            }
+
+                            // Actualizar progreso
+                            updateProgress();
+                        }
+                    });
+                });
+            }
+
+            function addNewPage() {
+                // Calcular número de hojas actuales
+                const currentSheets = Math.ceil(currentPages);
+
+                // Determinar si necesitamos crear una nueva hoja o añadir a la última si tiene solo una página
+                const lastSheet = albumContainer.lastElementChild;
+                const pagesInLastSheet = lastSheet ? lastSheet.querySelectorAll('.album-page').length : 0;
+
+                if (pagesInLastSheet < 2) {
+                    // Añadir página a la última hoja
+                    currentPages++;
+                    const newPage = createPageElement(currentPages);
+                    lastSheet.appendChild(newPage);
+                } else {
+                    // Crear nueva hoja con una página
+                    currentPages++;
+                    const newSheet = document.createElement('div');
+                    newSheet.className = 'album-sheet';
+
+                    const newPage = createPageElement(currentPages);
+                    newSheet.appendChild(newPage);
+
+                    albumContainer.appendChild(newSheet);
+                }
+
+                // Actualizar progreso
+                updateProgress();
+
+                // Actualizar los controladores de arrastrar y soltar
+                setupDragAndDrop();
+
+                // Actualizar botones de eliminar
+                setupRemoveButtons();
+
+                // Desplazar a la nueva página
+                setTimeout(() => {
+                    albumContainer.scrollTo({
+                        left: albumContainer.scrollWidth,
+                        behavior: 'smooth'
+                    });
+                }, 100);
+            }
+
+            function createPageElement(pageNumber) {
+                const pageDiv = document.createElement('div');
+                pageDiv.className = 'album-page';
+                pageDiv.dataset.page = pageNumber;
+
+                const emptyMessage = document.createElement('div');
+                emptyMessage.className = 'empty-page-message';
+                emptyMessage.innerHTML = `
+                    <i class="fas fa-plus-circle mb-2" style="font-size: 1.5rem;"></i>
+                    <div>Arrastra una imagen aquí</div>
+                `;
+
+                const pageLabel = document.createElement('div');
+                pageLabel.className = 'album-page-label';
+                pageLabel.textContent = `Página ${pageNumber}`;
+
+                const pageActions = document.createElement('div');
+                pageActions.className = 'page-actions';
+                pageActions.innerHTML = `
+                    <button class="page-action-btn remove-image" title="Eliminar imagen">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                `;
+
+                pageDiv.appendChild(emptyMessage);
+                pageDiv.appendChild(pageLabel);
+                pageDiv.appendChild(pageActions);
+
+                return pageDiv;
+            }
+
+            function updateProgress() {
+                // Contar cuántas páginas tienen imágenes
+                const filledPages = document.querySelectorAll('.album-page img').length;
+                const progressPercent = (filledPages / maxPages) * 100;
+
+                progressBar.style.width = `${progressPercent}%`;
+                progressText.textContent = `${filledPages}/${maxPages}`;
+            }
+
+            function resetAlbum() {
+                // Eliminar todas las imágenes de las páginas
+                document.querySelectorAll('.album-page img').forEach(img => img.remove());
+
+                // Mostrar mensajes vacíos nuevamente
+                document.querySelectorAll('.empty-page-message').forEach(msg => {
+                    msg.style.display = 'block';
+                });
+
+                // Restablecer el número de páginas al valor inicial si hay extras
+                while (currentPages > 4) {
+                    // Eliminar páginas adicionales
+                    const lastSheet = albumContainer.lastElementChild;
+                    if (lastSheet) {
+                        const pagesInLastSheet = lastSheet.querySelectorAll('.album-page').length;
+
+                        if (pagesInLastSheet > 1) {
+                            // Eliminar la última página de la hoja
+                            lastSheet.lastElementChild.remove();
+                            currentPages--;
+                        } else {
+                            // Eliminar la hoja completa
+                            lastSheet.remove();
+                            currentPages--;
+                        }
+                    }
+                }
+
+                // Actualizar progreso
+                updateProgress();
+
+                showNotification('Álbum reiniciado correctamente');
+            }
+
+            function showNotification(message, type = 'success') {
+                // Crear elemento de notificación
+                const notification = document.createElement('div');
+                notification.className = `helper-tip show ${type}`;
+                notification.style.bottom = '20px';
+                notification.style.right = '20px';
+                notification.style.zIndex = '1050';
+
+                notification.innerHTML = `
+                    <h6 class="mb-2">
+                        <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} me-2"></i>
+                        ${type === 'success' ? 'Éxito' : 'Alerta'}
+                    </h6>
+                    <p class="mb-0">${message}</p>
+                `;
+
+                document.body.appendChild(notification);
+
+                // Eliminar después de 3 segundos
+                setTimeout(() => {
+                    notification.style.opacity = '0';
+                    notification.style.transform = 'translateY(20px)';
+                    notification.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 300);
+                }, 3000);
+            }
+        });
+    </script>
